@@ -1,5 +1,4 @@
 venv
-Code/url_shortner*
 site.db
 *.pyc
 .DS_Store
