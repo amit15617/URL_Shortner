@@ -1,0 +1,13 @@
+logs/
+src/temp/
+static/
+templates/
+data/
+dataDownloader.py
+.git
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+env
