@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}View all URLS{% endblock %}
+
+
+{% block content %}
+    <br><h2 style="text-align: center;">List of previously shorted URLs</h2><hr>
+    <table class="table table-hover">
+        <thead>
+          <tr class="table-primary">
+            <th scope="col">#</th>
+            <th scope="col">Short URL</th>
+            <th scope="col">Long URL</th>
+          </tr>
+        </thead>
+        {% for url in vals %}
+        <tbody>
+          <tr>
+            <th scope="row">{{index}}</th>
+            <td><a href ="http://127.0.0.1:5000/{{url.short}}">http://127.0.0.1:5000/{{url.short}}</a></td>
+            <td><a href = {{url.long}}>{{url.long}}</a></td>
+          </tr>
+        <tbody>
+        {% endfor %}
+      </table>
+{% endblock %}

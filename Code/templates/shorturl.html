@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Short URL{% endblock %}
+
+{% block content %}
+    <br><hr><div class="alert alert-primary" role="alert" style="text-align: center;">
+        <h2 style="text-align: center;">Your new URL is ready</h2>
+    </div>
+    <div class="alert alert-success" role="alert">
+        <h3 style="text-align: center;"><a href ="http://127.0.0.1:5000/{{short_url_display}}">http://127.0.0.1:5000/{{short_url_display}}</a></h3>
+        <!-- <h1>http://127.0.0.1:5000/{{short_url_display}}</h1> -->
+    </div>
+{% endblock %}
