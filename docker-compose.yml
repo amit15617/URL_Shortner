@@ -1,0 +1,24 @@
+version: "3"
+
+networks:
+  amit-infracloud-network:
+    driver: bridge
+services:
+  web:
+    build:
+      context: ./Code/
+      dockerfile: ./Dockerfile
+      args:
+        AMIT_WEB_VERSION: 1.0.0
+    image: amitkumar15617/amit_url_shortner_web:1.0.0
+    container_name: amit_web
+    # expose:
+    #     - "5000"
+    ports:
+      - "5000:5000"
+    restart: on-failure
+    volumes:
+      - ./Code:/src
+    networks:
+      - amit-infracloud-network
+    command: python3 app.py
