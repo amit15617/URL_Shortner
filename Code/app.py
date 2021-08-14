@@ -6,19 +6,24 @@ Date : 9th Aug 2021
 
 """
 import os
+import json
 import random
 import string
+from infra_redis.redis_helper import get_redis_item, set_redis_item
 try:
     from flask import Flask, render_template, request, redirect, url_for
     from flask_sqlalchemy import SQLAlchemy
+    from config import logger
 except:
     os.system(
         "pip3 install Flask==1.1.2 psycopg2-binary==2.8.4 "
-        "click==7.1.2 Flask-RESTful==0.3.8 Flask-SQLAlchemy==2.4.4 gunicorn==20.0.4"
-        "itsdangerous==1.1.0 Jinja2==2.11.2 MarkupSafe==1.1.1 SQLAlchemy==1.3.19 Werkzeug==1.0.1"
+        "click==7.1.2 Flask-RESTful==0.3.8 Flask-SQLAlchemy==2.4.4 gunicorn==20.0.4 "
+        "itsdangerous==1.1.0 Jinja2==2.11.2 MarkupSafe==1.1.1 SQLAlchemy==1.3.19 Werkzeug==1.0.1 "
+        "loguru==0.5.3"
     )
     from flask import Flask, render_template, request, redirect, url_for
     from flask_sqlalchemy import SQLAlchemy
+    from config import logger
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///site.db"
@@ -53,17 +58,31 @@ def shorten_url():
 def home():
     if request.method == "POST":
         url_received = request.form["nm"]
-        found_url = URL.query.filter_by(long=url_received).first()
-
-        if found_url:
-            return redirect(url_for("display_short_url", url=found_url.short))
+        logger.info(f"Long URL received from user: {url_received}")
+        response = get_redis_item(f"url_{url_received}")
+        if response is not None:
+            response = json.loads(response)
+            logger.debug(f"Response from redis for long URL {url_received} is --> {response}")
+            found_url = response["short"]
+            return redirect(url_for("display_short_url", url=found_url))
         else:
-            short_url = shorten_url()
-            print(short_url)
-            new_url = URL(url_received, short_url)
-            db.session.add(new_url)
-            db.session.commit()
-            return redirect(url_for("display_short_url", url=short_url))
+            found_url = URL.query.filter_by(long=url_received).first()
+
+            if found_url:
+                return redirect(url_for("display_short_url", url=found_url.short))
+            else:
+                short_url = shorten_url()
+                logger.info(f"Random letter to be used in short URL: {short_url}")
+                new_url = URL(url_received, short_url)
+                data = {
+                    "long": url_received,
+                    "short": short_url
+                }
+                set_redis_item(f"url_{url_received}", json.dumps(data))
+
+                db.session.add(new_url)
+                db.session.commit()
+                return redirect(url_for("display_short_url", url=short_url))
     else:
         return render_template('url_page.html')
 

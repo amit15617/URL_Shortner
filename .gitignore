@@ -3,3 +3,4 @@ site.db
 *.pyc
 .DS_Store
 .idea/*
+Code/logs/*
